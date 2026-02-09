@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nebula Gaming Portal</title>
+    <title>Academic Research Portal - Nebula Analysis</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
@@ -24,15 +24,31 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
     <style type="text/css">
-        body {
+        /* --- Academic Styles --- */
+        #public-project {
+            background-color: #ffffff;
+            color: #1a1a1a;
+            font-family: 'Libre Baskerville', serif;
+            line-height: 1.8;
+            padding: 4rem 2rem;
+            min-height: 100vh;
+        }
+        #public-project h1 { font-weight: 700; border-bottom: 2px solid #333; margin-bottom: 2rem; }
+        #public-project h2 { font-weight: 700; margin-top: 2rem; border-bottom: 1px solid #ddd; }
+        .citation { color: #555; font-size: 0.9rem; font-style: italic; }
+
+        /* --- Secret Portal Styles --- */
+        #secret-portal {
+            display: none;
             font-family: 'Inter', sans-serif;
             background-color: #020617;
             color: #f1f5f9;
             margin: 0;
             overflow-x: hidden;
+            min-height: 100vh;
         }
         .glass {
             background: rgba(15, 23, 42, 0.7);
@@ -41,7 +57,7 @@
         }
         .game-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(56, 189, 248, 0.3);
         }
         .theater-overlay {
             display: none;
@@ -58,111 +74,238 @@
             min-height: 400px;
         }
         .category-btn.active {
-            background-color: #7c3aed;
+            background-color: #0ea5e9;
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.4);
         }
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        .sfx-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            transition: all 0.2s;
+        }
+        .sfx-btn:hover {
+            background: #0ea5e9;
+            color: white;
+            transform: scale(1.05);
+            border-color: #38bdf8;
+        }
+        .sfx-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Stealth Triggers */
+        .stealth-trigger {
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #000;
+            opacity: 0.04;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
+        .stealth-trigger:hover {
+            opacity: 0.15;
+        }
+        .panic-btn {
+            position: fixed;
+            bottom: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            z-index: 9999;
+            cursor: pointer;
+        }
+        .panic-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="bg-white">
 
-    <!-- Header / Search -->
-    <nav class="fixed top-0 left-0 right-0 h-16 glass border-b border-slate-800/50 z-50 px-6 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <div class="bg-violet-600 p-2 rounded-xl">
-                <i data-lucide="gamepad-2" class="text-white w-5 h-5"></i>
-            </div>
-            <span class="text-xl font-black tracking-tighter">NEBULA</span>
-        </div>
-
-        <div class="flex-1 max-w-xl mx-8 relative hidden md:block">
-            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
-                <i data-lucide="search" class="w-4 h-4"></i>
-            </div>
-            <input 
-                id="search-input"
-                type="text" 
-                placeholder="Search the nebula..." 
-                class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all"
-            />
-        </div>
-
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-violet-400">P</div>
-        </div>
-    </nav>
-
-    <div class="flex pt-16 flex-1">
-        <!-- Sidebar -->
-        <aside class="w-64 fixed left-0 top-16 bottom-0 bg-slate-950 border-r border-slate-900 overflow-y-auto hidden lg:block p-4">
-            <div class="space-y-1" id="category-list">
-                <button class="category-btn active w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="All">
-                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">All Games</span>
-                </button>
-                <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Action">
-                    <i data-lucide="zap" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">Action</span>
-                </button>
-                <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Sports">
-                    <i data-lucide="trophy" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">Sports</span>
-                </button>
-                <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Puzzle">
-                    <i data-lucide="puzzle" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">Puzzle</span>
-                </button>
-                <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Retro">
-                    <i data-lucide="history" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">Retro</span>
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 lg:ml-64 p-6 md:p-12">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-10">
-                    <h1 id="view-title" class="text-3xl font-black mb-2 tracking-tight">All Games</h1>
-                    <p class="text-slate-500">Welcome back, Pilot. Choose your destination.</p>
+    <!-- PUBLIC: The "Boring School Project" -->
+    <div id="public-project">
+        <div class="max-w-3xl mx-auto">
+            <header class="mb-12">
+                <p class="text-sm uppercase tracking-widest text-slate-500 mb-2">Department of Astrophysical Sciences</p>
+                <h1 class="text-4xl">Comparative Analysis of Emission Nebulae and Their Ionization Fronts</h1>
+                <div class="flex justify-between items-center text-sm text-slate-600 italic">
+                    <p>Authored by: Senior Research Group 4A</p>
+                    <p>Date: October 14, 2024</p>
                 </div>
+            </header>
 
-                <!-- Grid -->
-                <div id="game-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    <div class="col-span-full py-20 text-center text-violet-400 font-bold animate-pulse">
-                        Nebula Portal Loading...
-                    </div>
+            <section class="mb-8">
+                <h2 class="text-xl mb-4">Abstract</h2>
+                <p>
+                    This paper investigates the morphological evolution of diffuse nebulae, focusing specifically on the interaction between ultraviolet radiation from embedded massive stars and the surrounding interstellar medium (ISM). Through spectral analysis of H II regions, we identify key indicators of hydrodynamic instabilities that lead to the formation of pillar-like structures.
+                    <!-- HIDDEN TRIGGER: Inside the abstract text -->
+                    <span id="unlock-trigger" class="stealth-trigger" title="End of Abstract"></span>
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-xl mb-4">1. Introduction</h2>
+                <p>
+                    Nebulae serve as the primary nurseries for stellar formation in the Milky Way. The ionization of hydrogen atoms by high-energy photons creates localized zones of thermal expansion, which in turn generate high-pressure fronts that compress neighboring cold molecular clouds.
+                </p>
+                <div class="my-8 p-4 border border-slate-200 rounded relative group">
+                    <img src="https://images.unsplash.com/photo-1464802686167-b939a67e06a1?auto=format&fit=crop&q=10&w=800" alt="Nebula Reference Grayscale" class="w-full h-auto grayscale opacity-40">
+                    <p class="text-xs mt-2 text-center text-slate-400">Fig 1.1: Thermal mapping of the Carina Nebula (X-ray spectrum)</p>
                 </div>
-            </div>
-        </main>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-xl mb-4">2. Methodology</h2>
+                <p>
+                    Data was compiled using long-baseline interferometry at wavelengths between 450nm and 700nm. Observations focused on the Orion Nebula Cluster (ONC) to establish a baseline for electron density measurements. The resulting data points were processed using standard luminosity functions to account for atmospheric extinction.
+                </p>
+                <p class="mt-4">
+                    The classification of these regions depends heavily on the 'Nebula' index, a metric derived from the ratio of oxygen to nitrogen emissions. High-nebula sectors often exhibit increased complexity in their internal core structures, necessitating advanced neural synchronization for accurate mapping.
+                </p>
+            </section>
+
+            <footer class="mt-20 pt-8 border-t border-slate-100 text-xs text-slate-400">
+                <p>&copy; 2024 Institutional Archive for Space Research. All rights reserved. Access restricted to authorized personnel.</p>
+            </footer>
+        </div>
     </div>
 
-    <!-- Theater Mode Overlay -->
-    <div id="theater-overlay" class="theater-overlay">
-        <div class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-slate-950">
+    <!-- SECRET: The Gaming Portal -->
+    <div id="secret-portal">
+        <!-- Panic Switch (Nearly invisible) -->
+        <div id="panic-button" class="panic-btn" title="Panic Toggle"></div>
+
+        <!-- Header / Search -->
+        <nav class="fixed top-0 left-0 right-0 h-16 glass border-b border-slate-800/50 z-50 px-6 flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <button id="close-theater" class="p-2 text-slate-400 hover:text-white transition-colors">
-                    <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                </button>
-                <h2 id="theater-title" class="font-bold text-lg">Game Name</h2>
+                <div class="bg-sky-600 p-2 rounded-xl shadow-lg shadow-sky-900/20">
+                    <i data-lucide="gamepad-2" class="text-white w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-[0.2em] text-sky-400">NEBULA</span>
+                    <span class="text-[10px] text-slate-500 font-bold ml-2 uppercase opacity-60">v4.0 (Stable)</span>
+                </div>
             </div>
-            <button id="close-theater-btn" class="px-6 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all">
-                Close
-            </button>
+
+            <div class="flex-1 max-w-xl mx-8 relative hidden md:block">
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </div>
+                <input 
+                    id="search-input"
+                    type="text" 
+                    placeholder="Search the nebula..." 
+                    class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-sky-500 outline-none transition-all"
+                />
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-sky-400">P</div>
+            </div>
+        </nav>
+
+        <div class="flex pt-16 flex-1">
+            <!-- Sidebar -->
+            <aside class="w-64 fixed left-0 top-16 bottom-0 bg-slate-950 border-r border-slate-900 overflow-y-auto hidden lg:block p-4">
+                <div class="space-y-1" id="category-list">
+                    <button class="category-btn active w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="All">
+                        <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                        <span class="font-semibold text-sm">All Games</span>
+                    </button>
+                    <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Action">
+                        <i data-lucide="zap" class="w-5 h-5"></i>
+                        <span class="font-semibold text-sm">Action</span>
+                    </button>
+                    <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Sports">
+                        <i data-lucide="trophy" class="w-5 h-5"></i>
+                        <span class="font-semibold text-sm">Sports</span>
+                    </button>
+                    <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Puzzle">
+                        <i data-lucide="puzzle" class="w-5 h-5"></i>
+                        <span class="font-semibold text-sm">Puzzle</span>
+                    </button>
+                    <button class="category-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all text-slate-400 hover:bg-slate-900 hover:text-white" data-category="Retro">
+                        <i data-lucide="history" class="w-5 h-5"></i>
+                        <span class="font-semibold text-sm">Retro</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 lg:ml-64 p-6 md:p-12">
+                <div class="max-w-7xl mx-auto">
+                    <div class="mb-10">
+                        <h1 id="view-title" class="text-3xl font-black mb-2 tracking-tight">System Core</h1>
+                        <p class="text-slate-500">Welcome back, Pilot. Your neural link is active.</p>
+                    </div>
+
+                    <!-- Grid -->
+                    <div id="game-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        <div class="col-span-full py-20 text-center text-sky-400 font-bold animate-pulse">
+                            Synchronizing with Nebula...
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-        <div class="flex-1 bg-black overflow-hidden">
-            <iframe id="game-iframe" src="" class="w-full h-full border-0" allow="fullscreen; autoplay"></iframe>
+
+        <!-- Theater Mode Overlay -->
+        <div id="theater-overlay" class="theater-overlay">
+            <div class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-slate-950">
+                <div class="flex items-center gap-4">
+                    <button id="close-theater" class="p-2 text-slate-400 hover:text-white transition-colors">
+                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                    </button>
+                    <h2 id="theater-title" class="font-bold text-lg text-sky-400">Game Name</h2>
+                </div>
+                <button id="close-theater-btn" class="px-6 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-rose-900/20">
+                    EXIT GAME
+                </button>
+            </div>
+            <div class="flex-1 bg-black overflow-hidden relative">
+                <iframe id="game-iframe" src="" class="w-full h-full border-0" allow="autoplay; fullscreen; keyboard; pointer-lock;" loading="lazy"></iframe>
+            </div>
         </div>
     </div>
 
     <!-- No modules, standard script -->
     <script>
-        // --- Starter Data ---
+        // --- Stealth Logic ---
+        const publicProject = document.getElementById('public-project');
+        const secretPortal = document.getElementById('secret-portal');
+        const unlockTrigger = document.getElementById('unlock-trigger');
+        const panicButton = document.getElementById('panic-button');
+
+        function toggleStealth(showSecret) {
+            if (showSecret) {
+                publicProject.style.display = 'none';
+                secretPortal.style.display = 'block';
+                document.body.className = "bg-slate-950 overflow-x-hidden";
+                document.title = "Nebula Gaming Portal";
+            } else {
+                publicProject.style.display = 'block';
+                secretPortal.style.display = 'none';
+                document.body.className = "bg-white";
+                document.title = "Academic Research Portal - Nebula Analysis";
+            }
+        }
+
+        unlockTrigger.addEventListener('click', () => toggleStealth(true));
+        panicButton.addEventListener('click', () => toggleStealth(false));
+
+        // --- Starter Data (V4.0.0) ---
         const starterGames = [
             {
                 id: 'slope',
@@ -170,23 +313,54 @@
                 category: 'Action',
                 thumbnail: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=600',
                 url: 'https://kdata1.com/2020/05/slope/',
-                description: 'High-speed 3D neon ball runner. Avoid obstacles and stay on the track.'
+                description: 'The definitive high-speed 3D runner. Control the ball, avoid the red, and survive.'
             },
             {
-                id: 'eaglecraft',
-                title: 'Eaglecraft',
+                id: 'interstellar',
+                title: 'Interstellar Portal',
+                category: 'Retro',
+                description: 'Advanced interstellar web navigation and utility suite.',
+                customStyle: true
+            },
+            {
+                id: 'nowgg',
+                title: 'now.gg (Roblox/Mobile)',
                 category: 'Action',
-                thumbnail: 'https://images.unsplash.com/photo-1615655114865-4cc1bda5901e?auto=format&fit=crop&q=80&w=600',
-                url: 'https://eaglecraft.net/play/',
-                description: 'A Minecraft web port. Build, survive, and explore blocky worlds.'
+                thumbnail: 'https://now.gg/favicon.ico',
+                url: 'https://now.gg/apps/roblox/971/roblox.html',
+                description: 'Cloud gaming platform for Roblox and mobile titles. Bypasses restrictions.',
+                isExternal: true,
+                customStyle: true
             },
             {
                 id: '1v1lol',
                 title: '1v1.lol',
                 category: 'Action',
                 thumbnail: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600',
-                url: 'https://1v1.lol/',
-                description: 'Competitive 3D building shooter. Build fast, shoot faster.'
+                url: 'https://669866621-824524458639527022.preview.editmysite.com/uploads/b/139890129-845347265249567140/files/1v1.html',
+                description: 'Competitive third-person shooter with building mechanics. Master your aim and your edits.'
+            },
+            {
+                id: 'gamezop',
+                title: 'Gamezop Hub',
+                category: 'Puzzle',
+                thumbnail: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=600',
+                url: 'https://www.gamezop.com/?id=YOUR_ID_HERE',
+                description: 'A massive aggregator of high-quality HTML5 games. Endless variety in one place.'
+            },
+            {
+                id: 'mediafeed',
+                title: 'Research & Media Feed',
+                category: 'Action',
+                description: 'Dynamic content stream powered by proxied TikTok explore.',
+                customStyle: true
+            },
+            {
+                id: 'sfxboard',
+                title: 'Custom SFX Board',
+                category: 'Retro',
+                description: 'Legendary internet sound bites for instant emotional damage.',
+                customStyle: true
             }
         ];
 
@@ -195,52 +369,120 @@
 
         // --- Core Functions ---
 
+        function launchNowGG() {
+            window.open('https://now.gg/apps/roblox/971/roblox.html', 'nowgg', 'width=1200,height=700');
+        }
+
+        function playSound(url) {
+            const audio = new Audio(url);
+            audio.currentTime = 0;
+            audio.play().catch(e => {
+                console.log("Audio interaction required: Click the page first.");
+                alert("Please click anywhere on the page first to enable sound effects!");
+            });
+        }
+
         function renderGames() {
             const grid = document.getElementById('game-grid');
             if (!grid) return;
 
-            // Filter logic
             const filtered = starterGames.filter(game => {
                 const matchesCategory = currentCategory === 'All' || game.category === currentCategory;
                 const matchesSearch = game.title.toLowerCase().includes(currentSearch.toLowerCase());
                 return matchesCategory && matchesSearch;
             });
 
-            // Clear loading text or existing games
             grid.innerHTML = '';
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500 italic">No games found in the nebula...</div>`;
+                grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500 italic">No games detected in sector...</div>`;
                 return;
             }
 
-            // Physically build elements
             filtered.forEach(game => {
                 const card = document.createElement('div');
-                card.className = "game-card group bg-slate-900/40 rounded-[2rem] border border-slate-800/50 overflow-hidden cursor-pointer transition-all duration-300";
-                card.onclick = () => openTheater(game);
+                
+                // Custom styles for specific IDs
+                if (game.id === 'nowgg') {
+                    card.className = "game-card group bg-[#1e293b] p-6 rounded-[2rem] border border-[#7c3aed] text-center transition-all duration-300";
+                    card.innerHTML = `
+                        <div class="mb-4 flex justify-center">
+                            <img src="${game.thumbnail}" style="width:50px;" class="group-hover:scale-110 transition-transform">
+                        </div>
+                        <h3 class="text-white text-lg font-bold mb-4">${game.title}</h3>
+                        <button onclick="launchNowGG()" class="bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-5 py-3 rounded-xl font-bold transition-all w-full shadow-lg shadow-purple-900/20">
+                            LAUNCH CLOUD GAME
+                        </button>
+                    `;
+                } else if (game.id === 'interstellar') {
+                    card.className = "col-span-1 md:col-span-2 lg:col-span-2 game-card bg-[#000] p-6 rounded-[2rem] border border-blue-500/50 transition-all duration-300 shadow-lg shadow-blue-900/10";
+                    card.innerHTML = `
+                        <h3 class="text-xl font-bold mb-4 text-blue-400 flex items-center gap-3">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i> Interstellar Hub
+                        </h3>
+                        <iframe 
+                          src="https://gointerstellar.app/" 
+                          style="width:100%; height:600px; border:none; border-radius:1.5rem; background:#000;" 
+                          allow="autoplay; fullscreen; focus-without-user-activation;"
+                          loading="lazy">
+                        </iframe>
+                    `;
+                } else if (game.id === 'mediafeed') {
+                    card.className = "col-span-1 md:col-span-2 lg:col-span-2 game-card bg-[#111] p-6 rounded-[2rem] border border-[#ff0050] transition-all duration-300 shadow-lg shadow-pink-900/10";
+                    card.innerHTML = `
+                        <h3 class="text-xl font-bold mb-4 text-[#00f2ea] flex items-center gap-3">
+                            <i data-lucide="monitor-play" class="w-6 h-6"></i> Research & Media Feed
+                        </h3>
+                        <iframe src="https://uv.studentportal.dev/proxy/https://www.tiktok.com/explore" 
+                                style="width:100%; height:600px; border:none; border-radius:1.5rem; background:#000;" 
+                                loading="lazy">
+                        </iframe>
+                    `;
+                } else if (game.id === 'sfxboard') {
+                    card.className = "col-span-1 md:col-span-2 lg:col-span-2 game-card group bg-slate-900/60 p-6 rounded-[2rem] border border-sky-500/30 transition-all duration-300";
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-sky-400 flex items-center gap-3">
+                                <i data-lucide="volume-2" class="w-6 h-6"></i> Custom SFX Board
+                            </h2>
+                            <span class="px-2 py-0.5 bg-slate-800 rounded-md text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Interactive</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/vine-boom.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs">VINE BOOM</button>
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/bruh.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs">BRUH</button>
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/discord-notification.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs">DISCORD</button>
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/erro.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs">ERROR</button>
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/taco-bell-bong.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs">BONG</button>
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/fart-with-reverb.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs">REVERB FART</button>
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/what-the-dog-doin.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs">DOG DOIN?</button>
+                            <button onclick="playSound('https://www.myinstants.com/media/sounds/emotional-damage.mp3')" class="sfx-btn p-3 rounded-xl font-bold text-xs text-rose-400 hover:text-white">DAMAGE</button>
+                        </div>
+                    `;
+                } else {
+                    card.className = "game-card group bg-slate-900/40 rounded-[2rem] border border-slate-800/50 overflow-hidden cursor-pointer transition-all duration-300";
+                    card.onclick = () => game.isExternal ? window.open(game.url, game.id) : openTheater(game);
 
-                card.innerHTML = `
-                    <div class="aspect-[16/10] relative overflow-hidden bg-slate-800">
-                        <img src="${game.thumbnail}" alt="${game.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                            <div class="w-14 h-14 bg-white text-slate-950 rounded-full flex items-center justify-center shadow-2xl transform scale-75 group-hover:scale-100 transition-transform">
-                                <i data-lucide="play" class="fill-current w-6 h-6 ml-1"></i>
+                    card.innerHTML = `
+                        <div class="aspect-[16/10] relative overflow-hidden bg-slate-800">
+                            <img src="${game.thumbnail}" alt="${game.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                <div class="w-14 h-14 bg-white text-slate-950 rounded-full flex items-center justify-center shadow-2xl transform scale-75 group-hover:scale-100 transition-transform">
+                                    <i data-lucide="${game.isExternal ? 'external-link' : 'play'}" class="fill-current w-6 h-6 ml-1"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-lg font-bold group-hover:text-violet-400 transition-colors">${game.title}</h3>
-                            <span class="px-2 py-0.5 bg-slate-800 rounded-md text-[9px] font-bold text-slate-400 uppercase tracking-tighter">${game.category}</span>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-lg font-bold group-hover:text-sky-400 transition-colors">${game.title}</h3>
+                                <span class="px-2 py-0.5 bg-slate-800 rounded-md text-[9px] font-bold text-slate-400 uppercase tracking-tighter">${game.category}</span>
+                            </div>
+                            <p class="text-sm text-slate-500 line-clamp-2 leading-relaxed">${game.description}</p>
                         </div>
-                        <p class="text-sm text-slate-500 line-clamp-2 leading-relaxed">${game.description}</p>
-                    </div>
-                `;
+                    `;
+                }
                 grid.appendChild(card);
             });
 
-            // Refresh icons for new content
             if (window.lucide) lucide.createIcons();
         }
 
@@ -264,42 +506,32 @@
             document.body.style.overflow = '';
         }
 
-        // --- Event Listeners ---
-
         function init() {
-            // Icons
             if (window.lucide) lucide.createIcons();
 
-            // Search
             document.getElementById('search-input').addEventListener('input', (e) => {
                 currentSearch = e.target.value;
                 renderGames();
             });
 
-            // Categories
             const catBtns = document.querySelectorAll('.category-btn');
             catBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     catBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentCategory = btn.getAttribute('data-category');
-                    document.getElementById('view-title').textContent = currentCategory + ' Games';
+                    document.getElementById('view-title').textContent = currentCategory === 'All' ? 'System Core' : currentCategory + ' Sector';
                     renderGames();
                 });
             });
 
-            // Theater controls
             document.getElementById('close-theater').onclick = closeTheater;
             document.getElementById('close-theater-btn').onclick = closeTheater;
 
-            // Immediate render
             renderGames();
         }
 
-        // --- Execution ---
         window.onload = init;
-        // Fallback for immediate render
-        renderGames();
     </script>
 </body>
 </html>
